@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "category": "materials",
+    "currency": "RUB",
+    "updated_at": "2026-01-03"
+  },
+  "camera_patches_round": [
+    { "size": "Ф25", "price": 20 },
+    { "size": "Ф32", "price": 20 },
+    { "size": "Ф37", "price": 25 },
+    { "size": "Ф42", "price": 25 },
+    { "size": "Ф52", "price": 30 },
+    { "size": "Ф62", "price": 35 },
+    { "size": "Ф72", "price": 45 },
+    { "size": "Ф82", "price": 60 },
+    { "size": "Ф102", "price": 75 },
+    { "size": "Ф116", "price": 90 }
+  ],
+  "camera_patches_oval": [
+    { "size": "24x38", "price": 25 },
+    { "size": "30x43", "price": 30 },
+    { "size": "37x57", "price": 30 },
+    { "size": "48x80", "price": 35 },
+    { "size": "57x115", "price": 60 },
+    { "size": "70x150", "price": 80 },
+    { "size": "95x185", "price": 110 }
+  ],
+  "tubeless_patches": [
+    { "type": "U mic", "price": 35 },
+    { "type": "U min", "price": 40 },
+    { "type": "U mid", "price": 50 },
+    { "type": "U max", "price": 60 }
+  ],
+  "plugs": [
+    { "type": "Г7", "price": 55 },
+    { "type": "Г9", "price": 65 },
+    { "type": "Г12", "price": 80 }
+  ]
+}

@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Фон круглый -->
+  <circle cx="256" cy="256" r="256" fill="#e74c3c"/>
+  
+  <!-- Внешний обод шины -->
+  <circle cx="256" cy="256" r="200" fill="#2c3e50" stroke="#1a252f" stroke-width="8"/>
+  
+  <!-- Протектор шины (насечки) -->
+  <g fill="#3d5266">
+    <rect x="248" y="64" width="16" height="40" rx="4"/>
+    <rect x="248" y="408" width="16" height="40" rx="4"/>
+    <rect x="64" y="248" width="40" height="16" rx="4"/>
+    <rect x="408" y="248" width="40" height="16" rx="4"/>
+    <rect x="120" y="100" width="16" height="40" rx="4" transform="rotate(45 128 120)"/>
+    <rect x="376" y="372" width="16" height="40" rx="4" transform="rotate(45 384 392)"/>
+    <rect x="372" y="100" width="16" height="40" rx="4" transform="rotate(-45 380 120)"/>
+    <rect x="116" y="372" width="16" height="40" rx="4" transform="rotate(-45 124 392)"/>
+  </g>
+  
+  <!-- Боковина шины -->
+  <circle cx="256" cy="256" r="150" fill="#34495e" stroke="#2c3e50" stroke-width="6"/>
+  
+  <!-- Диск (центр) -->
+  <circle cx="256" cy="256" r="100" fill="#bdc3c7" stroke="#95a5a6" stroke-width="4"/>
+  
+  <!-- Отверстия диска -->
+  <circle cx="256" cy="180" r="18" fill="#7f8c8d"/>
+  <circle cx="256" cy="332" r="18" fill="#7f8c8d"/>
+  <circle cx="180" cy="256" r="18" fill="#7f8c8d"/>
+  <circle cx="332" cy="256" r="18" fill="#7f8c8d"/>
+  <circle cx="202" cy="202" r="18" fill="#7f8c8d"/>
+  <circle cx="310" cy="310" r="18" fill="#7f8c8d"/>
+  <circle cx="310" cy="202" r="18" fill="#7f8c8d"/>
+  <circle cx="202" cy="310" r="18" fill="#7f8c8d"/>
+  
+  <!-- Центральная гайка -->
+  <circle cx="256" cy="256" r="35" fill="#e74c3c" stroke="#c0392b" stroke-width="3"/>
+  <circle cx="256" cy="256" r="20" fill="#c0392b"/>
+</svg>
