@@ -38,16 +38,17 @@ app.set('trust proxy', 1);
 // ─────────────────────────────────────────────
 // Limiter создаётся ПОСЛЕ trust proxy, но ДО любых app.use()
 const apiLimiter = rateLimit({
-    windowMs: 60 * 1000, // 1 минута
-    max: 20, // Максимум 20 запросов в минуту
+    windowMs: 60 * 1000,
+    max: 20,
+    standardHeaders: true,
+    legacyHeaders: false,
+
+    keyGenerator: (req) => req.ip,
+
     message: {
         error: 'Слишком много запросов. Подождите минуту.',
         reply: 'Пожалуйста, подождите немного перед следующим сообщением.'
-    },
-    standardHeaders: true,
-    legacyHeaders: false,
-    // Отключаем валидацию, т.к. trust proxy уже настроен корректно
-    validate: false
+    }
 });
 
 // ─────────────────────────────────────────────
