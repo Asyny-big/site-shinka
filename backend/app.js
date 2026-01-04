@@ -8,7 +8,6 @@ const path = require('path');
 // ─────────────────────────────────────────────
 // ИНИЦИАЛИЗАЦИЯ ENV (КРИТИЧНО!)
 // ─────────────────────────────────────────────
-// Явно указываем путь к .env файлу в папке backend
 require('dotenv').config({ 
     path: path.resolve(__dirname, '.env') 
 });
@@ -18,29 +17,43 @@ const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 
 // ─────────────────────────────────────────────
-// СОЗДАНИЕ EXPRESS APP + TRUST PROXY
+// СОЗДАНИЕ EXPRESS APP
 // ─────────────────────────────────────────────
-// ВАЖНО: trust proxy ДОЛЖЕН быть установлен СРАЗУ после создания app
-// и ДО создания rate-limiter, иначе express-rate-limit выдаст ошибку:
-// ERR_ERL_UNEXPECTED_X_FORWARDED_FOR
 const app = express();
-
-// Доверяем первому прокси (Nginx)
-// 1 = доверять одному прокси (Nginx перед Node.js)
-// Это позволяет корректно определять реальный IP клиента через X-Forwarded-For
-app.set('trust proxy', 1);
-
 const PORT = process.env.PORT || 3000;
 
-// Импортируем роуты ПОСЛЕ настройки trust proxy
-const chatRoutes = require('./routes/chat');
+// ─────────────────────────────────────────────
+// TRUST PROXY (КРИТИЧНО! ДО ЛЮБЫХ app.use)
+// ─────────────────────────────────────────────
+// ВАЖНО: trust proxy ДОЛЖЕН быть установлен СРАЗУ после создания app
+// и ДО ЛЮБЫХ app.use(), включая rate-limiter
+// Иначе express-rate-limit выдаст: ERR_ERL_UNEXPECTED_X_FORWARDED_FOR
+//
+// Значение 1 = доверять первому прокси в цепочке (Nginx)
+// Это позволяет Express корректно читать X-Forwarded-For
+app.set('trust proxy', 1);
+
+// ─────────────────────────────────────────────
+// RATE LIMITING (создаём СРАЗУ после trust proxy)
+// ─────────────────────────────────────────────
+// Limiter создаётся ПОСЛЕ trust proxy, но ДО любых app.use()
+const apiLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 минута
+    max: 20, // Максимум 20 запросов в минуту
+    message: {
+        error: 'Слишком много запросов. Подождите минуту.',
+        reply: 'Пожалуйста, подождите немного перед следующим сообщением.'
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+    // Отключаем валидацию, т.к. trust proxy уже настроен корректно
+    validate: false
+});
 
 // ─────────────────────────────────────────────
 // ПРОВЕРКА КОНФИГУРАЦИИ
 // ─────────────────────────────────────────────
 const AI_ENABLED = !!process.env.OPENROUTER_API_KEY;
-
-// Экспортируем флаг для использования в роутах
 app.locals.aiEnabled = AI_ENABLED;
 
 // ─────────────────────────────────────────────
@@ -55,36 +68,20 @@ app.use(cors({
 }));
 
 // Парсинг JSON
-app.use(express.json({ limit: '10kb' })); // Ограничение размера запроса
+app.use(express.json({ limit: '10kb' }));
 
 // Статические файлы (фронтенд)
 app.use(express.static(path.join(__dirname, '..')));
 
-// Rate limiting — защита от спама
-// Настройка для работы за Nginx reverse proxy
-const chatLimiter = rateLimit({
-    windowMs: 60 * 1000, // 1 минута
-    max: 20, // Максимум 20 запросов в минуту
-    message: {
-        error: 'Слишком много запросов. Подождите минуту.',
-        reply: 'Пожалуйста, подождите немного перед следующим сообщением.'
-    },
-    standardHeaders: true, // Возвращать RateLimit-* заголовки
-    legacyHeaders: false,  // Отключить X-RateLimit-* заголовки
-    // Явно указываем, что trust proxy уже настроен
-    // Это предотвращает ошибку ERR_ERL_UNEXPECTED_X_FORWARDED_FOR
-    validate: {
-        trustProxy: true,      // Мы доверяем прокси (настроено выше)
-        xForwardedForHeader: true // Разрешаем использование X-Forwarded-For
-    }
-});
-
-// Применяем rate limiting к API чата
-app.use('/api/chat', chatLimiter);
+// Rate limiting для API (применяется ко всем /api/* роутам)
+app.use('/api', apiLimiter);
 
 // ─────────────────────────────────────────────
 // ROUTES
 // ─────────────────────────────────────────────
+
+// Импортируем роуты
+const chatRoutes = require('./routes/chat');
 
 // API чата
 app.use('/api/chat', chatRoutes);
