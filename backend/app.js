@@ -42,9 +42,9 @@ const apiLimiter = rateLimit({
     max: 20,
     standardHeaders: true,
     legacyHeaders: false,
-
-    keyGenerator: (req) => req.ip,
-
+    // КРИТИЧНО: отключаем валидацию X-Forwarded-For
+    // т.к. trust proxy уже настроен выше
+    validate: false,
     message: {
         error: 'Слишком много запросов. Подождите минуту.',
         reply: 'Пожалуйста, подождите немного перед следующим сообщением.'
