@@ -1,22 +1,25 @@
 # Robots.txt для сайта Шиномонтаж у Дениса
 # https://ydenisa.ru/robots.txt
 
+# Общие правила для всех роботов
 User-agent: *
 Allow: /
+Allow: /images/
+Allow: /css/
+Allow: /js/
 
-# Запрещаем индексацию служебных файлов
+# Запрещаем индексацию служебных директорий
 Disallow: /backend/
 Disallow: /node_modules/
+Disallow: /.git/
+
+# Запрещаем индексацию служебных файлов
 Disallow: /*.json$
+Disallow: /.env
+Disallow: /.gitignore
 
-# Разрешаем индексацию изображений
-Allow: /images/
-
-# Карта сайта
+# Карта сайта (для всех поисковых систем)
 Sitemap: https://ydenisa.ru/sitemap.xml
 
-# Для Яндекса
+# Главное зеркало для Яндекса
 Host: https://ydenisa.ru
-
-# Задержка между запросами (опционально)
-Crawl-delay: 1
