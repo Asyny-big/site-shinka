@@ -167,7 +167,7 @@ async function queryOpenRouter(conversationHistory) {
     ];
 
     const payload = {
-        model: process.env.AI_MODEL || 'meta-llama/llama-3.1-405b-instruct:free',
+        model: process.env.AI_MODEL || 'cognitivecomputations/dolphin-mistral-24b-venice-edition:free',
         messages,
         temperature: 0.5,
         max_tokens: 500
