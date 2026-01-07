@@ -167,7 +167,7 @@ async function queryOpenRouter(conversationHistory) {
     ];
 
     const payload = {
-        model: process.env.AI_MODEL || 'cognitivecomputations/dolphin-mistral-24b-venice-edition:free',
+        model: process.env.AI_MODEL || 'xiaomi/mimo-v2-flash:free',
         messages,
         temperature: 0.5,
         max_tokens: 500
