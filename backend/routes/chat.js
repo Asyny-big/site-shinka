@@ -141,6 +141,39 @@ ${pricesBike.accessories.map(s => `• ${s.name}: ${s.price} ₽`).join('\n')}
 const FULL_SYSTEM_PROMPT = buildSystemPrompt();
 
 // ═══════════════════════════════════════════════
+// ПОЛУЧЕНИЕ МЕСТНОГО ВРЕМЕНИ (Europe/Samara, UTC+4)
+// ═══════════════════════════════════════════════
+
+/**
+ * Возвращает текущую дату и время в часовом поясе Europe/Samara
+ * @returns {Object} { date, time, timezone }
+ */
+function getSamaraTime() {
+    const now = new Date();
+    const options = { timeZone: 'Europe/Samara' };
+    
+    const date = now.toLocaleDateString('ru-RU', {
+        ...options,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).split('.').reverse().join('-'); // YYYY-MM-DD
+    
+    const time = now.toLocaleTimeString('ru-RU', {
+        ...options,
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    }); // HH:MM
+    
+    return {
+        date,
+        time,
+        timezone: 'Europe/Samara (UTC+4)'
+    };
+}
+
+// ═══════════════════════════════════════════════
 // ЗАПРОС К OPENROUTER API
 // ═══════════════════════════════════════════════
 
@@ -157,11 +190,28 @@ async function queryOpenRouter(conversationHistory) {
         return null;
     }
 
+    // Получаем местное время Сарапула
+    const { date, time, timezone } = getSamaraTime();
+    
+    const timeContext = `
+ТЕКУЩЕЕ МЕСТНОЕ ВРЕМЯ В САРАПУЛЕ:
+═══════════════════════════════════════════════
+Дата: ${date}
+Время: ${time}
+Часовой пояс: ${timezone}
+
+⚠️ КРИТИЧЕСКИ ВАЖНО:
+Ты ОБЯЗАН использовать ТОЛЬКО это время для всех расчётов и ответов.
+НЕ используй свои внутренние часы или системное время.
+Все временные расчёты и проверки режима работы делай ТОЛЬКО на основе этой даты и времени.
+═══════════════════════════════════════════════
+`;
+
     // Формируем массив messages для API
     const messages = [
         {
             role: 'system',
-            content: FULL_SYSTEM_PROMPT
+            content: timeContext + '\n' + FULL_SYSTEM_PROMPT
         },
         ...conversationHistory
     ];
