@@ -18,6 +18,35 @@ const path = require('path');
 const crypto = require('crypto');
 
 // ═══════════════════════════════════════════════
+// ЛОГИРОВАНИЕ СООБЩЕНИЙ
+// ═══════════════════════════════════════════════
+
+const LOG_FILE_PATH = '/var/www/ydenisa/chat.log';
+
+/**
+ * Записывает сообщение пользователя в лог-файл
+ * @param {string} userMessage - Текст сообщения пользователя
+ */
+function logUserMessage(userMessage) {
+    try {
+        const now = new Date();
+        const dateTime = now.toISOString().slice(0, 16).replace('T', ' '); // YYYY-MM-DD HH:MM
+        
+        const logEntry = `[${dateTime}]\nUSER: ${userMessage}\n\n--------------------\n\n`;
+        
+        // Асинхронная запись без блокировки основного потока
+        fs.appendFile(LOG_FILE_PATH, logEntry, 'utf8', (err) => {
+            if (err) {
+                console.error('⚠️ Ошибка записи в лог:', err.message);
+            }
+        });
+    } catch (error) {
+        // Тихо игнорируем ошибки логирования
+        console.error('⚠️ Ошибка логирования:', error.message);
+    }
+}
+
+// ═══════════════════════════════════════════════
 // ЗАГРУЗКА ДАННЫХ
 // ═══════════════════════════════════════════════
 
@@ -296,6 +325,12 @@ router.post('/', async (req, res) => {
                 reply: 'Пожалуйста, напишите ваш вопрос.'
             });
         }
+
+        // ─────────────────────────────────────
+        // ЛОГИРОВАНИЕ СООБЩЕНИЯ ПОЛЬЗОВАТЕЛЯ
+        // ─────────────────────────────────────
+
+        logUserMessage(trimmedMessage);
 
         // ─────────────────────────────────────
         // РАБОТА С СЕССИЕЙ
