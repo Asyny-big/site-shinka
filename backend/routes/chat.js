@@ -246,7 +246,7 @@ async function queryOpenRouter(conversationHistory) {
     ];
 
     const payload = {
-        model: process.env.AI_MODEL || 'xiaomi/mimo-v2-flash:free',
+        model: process.env.AI_MODEL || 'meta-llama/llama-3.3-70b-instruct:free',
         messages,
         temperature: 0.5,
         max_tokens: 500
