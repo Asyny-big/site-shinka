@@ -246,7 +246,7 @@ async function queryOpenRouter(conversationHistory) {
     ];
 
     const payload = {
-        model: process.env.AI_MODEL || 'openai/gpt-oss-120b:free',
+        model: process.env.AI_MODEL || 'z-ai/glm-4.5-air:free',
         messages,
         temperature: 0.5,
         max_tokens: 500
