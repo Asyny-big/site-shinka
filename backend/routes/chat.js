@@ -246,7 +246,7 @@ async function queryOpenRouter(conversationHistory) {
     ];
 
     const payload = {
-        model: process.env.AI_MODEL || 'z-ai/glm-4.5-air:free',
+        model: process.env.AI_MODEL || 'arcee-ai/trinity-large-preview:free',
         messages,
         temperature: 0.5,
         max_tokens: 500
