@@ -29,8 +29,13 @@ function formatLogTimestamp(date = new Date()) {
 
 function sanitizeLogValue(value = '') {
     return String(value)
-        .replace(/\r?\n/g, '\\n')
         .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function normalizeLogMessage(value = '') {
+    return String(value)
+        .replace(/\r\n?/g, '\n')
         .trim();
 }
 
@@ -46,15 +51,20 @@ function appendLogEntry(logEntry) {
  * Универсальное логирование сообщения чата
  * @param {Object} params
  * @param {string} params.sessionId
+ * @param {number} params.turn
  * @param {'user'|'assistant'} params.role
  * @param {string} params.source
  * @param {string} params.message
  */
-function logChatMessage({ sessionId, role, source, message }) {
+function logChatMessage({ sessionId, turn, role, source, message }) {
     try {
         const shortSessionId = sessionId ? sessionId.slice(0, 8) : 'unknown';
-        const sanitizedMessage = sanitizeLogValue(message);
-        const logEntry = `[${formatLogTimestamp()}] session=${sessionId || 'unknown'} sessionShort=${shortSessionId} role=${role} source=${source} message=${JSON.stringify(sanitizedMessage)}`;
+        const normalizedMessage = normalizeLogMessage(message);
+        const logEntry = [
+            `[${formatLogTimestamp()}] session=${sessionId || 'unknown'} sessionShort=${shortSessionId} turn=${turn || 0} role=${role} source=${source}`,
+            normalizedMessage || '(empty)',
+            '--------------------'
+        ].join('\n');
         appendLogEntry(logEntry);
     } catch (error) {
         console.error('⚠️ Ошибка логирования:', error.message);
@@ -108,6 +118,7 @@ try {
  * Структура сессии:
  * {
  *   messages: [{ role: 'user'|'assistant', content: string }],
+ *   turnCounter: number,
  *   createdAt: Date,
  *   lastActivity: Date
  * }
@@ -377,6 +388,7 @@ router.post('/', async (req, res) => {
             isNewSession = true;
             sessions.set(sessionId, {
                 messages: [],
+                turnCounter: 0,
                 createdAt: Date.now(),
                 lastActivity: Date.now()
             });
@@ -390,6 +402,9 @@ router.post('/', async (req, res) => {
 
         const session = sessions.get(sessionId);
         session.lastActivity = Date.now();
+        session.turnCounter = Number.isInteger(session.turnCounter) ? session.turnCounter : 0;
+        session.turnCounter += 1;
+        const currentTurn = session.turnCounter;
 
         // ─────────────────────────────────────
         // ДОБАВЛЯЕМ СООБЩЕНИЕ ПОЛЬЗОВАТЕЛЯ В ИСТОРИЮ
@@ -401,6 +416,7 @@ router.post('/', async (req, res) => {
         });
         logChatMessage({
             sessionId,
+            turn: currentTurn,
             role: 'user',
             source: 'client',
             message: trimmedMessage
@@ -432,6 +448,7 @@ router.post('/', async (req, res) => {
             });
             logChatMessage({
                 sessionId,
+                turn: currentTurn,
                 role: 'assistant',
                 source: 'ai',
                 message: reply
@@ -442,6 +459,7 @@ router.post('/', async (req, res) => {
             reply = FALLBACK_MESSAGE;
             logChatMessage({
                 sessionId,
+                turn: currentTurn,
                 role: 'assistant',
                 source: 'fallback',
                 message: reply
