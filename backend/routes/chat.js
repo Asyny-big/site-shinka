@@ -23,25 +23,58 @@ const crypto = require('crypto');
 
 const LOG_FILE_PATH = '/var/www/ydenisa/chat.log';
 
+function formatLogTimestamp(date = new Date()) {
+    return date.toISOString().slice(0, 19).replace('T', ' ');
+}
+
+function sanitizeLogValue(value = '') {
+    return String(value)
+        .replace(/\r?\n/g, '\\n')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function appendLogEntry(logEntry) {
+    fs.appendFile(LOG_FILE_PATH, `${logEntry}\n`, 'utf8', (err) => {
+        if (err) {
+            console.error('⚠️ Ошибка записи в лог:', err.message);
+        }
+    });
+}
+
 /**
- * Записывает сообщение пользователя в лог-файл
- * @param {string} userMessage - Текст сообщения пользователя
+ * Универсальное логирование сообщения чата
+ * @param {Object} params
+ * @param {string} params.sessionId
+ * @param {'user'|'assistant'} params.role
+ * @param {string} params.source
+ * @param {string} params.message
  */
-function logUserMessage(userMessage) {
+function logChatMessage({ sessionId, role, source, message }) {
     try {
-        const now = new Date();
-        const dateTime = now.toISOString().slice(0, 16).replace('T', ' '); // YYYY-MM-DD HH:MM
-        
-        const logEntry = `[${dateTime}]\nUSER: ${userMessage}\n\n--------------------\n\n`;
-        
-        // Асинхронная запись без блокировки основного потока
-        fs.appendFile(LOG_FILE_PATH, logEntry, 'utf8', (err) => {
-            if (err) {
-                console.error('⚠️ Ошибка записи в лог:', err.message);
-            }
-        });
+        const shortSessionId = sessionId ? sessionId.slice(0, 8) : 'unknown';
+        const sanitizedMessage = sanitizeLogValue(message);
+        const logEntry = `[${formatLogTimestamp()}] session=${sessionId || 'unknown'} sessionShort=${shortSessionId} role=${role} source=${source} message=${JSON.stringify(sanitizedMessage)}`;
+        appendLogEntry(logEntry);
     } catch (error) {
-        // Тихо игнорируем ошибки логирования
+        console.error('⚠️ Ошибка логирования:', error.message);
+    }
+}
+
+/**
+ * Логирование событий сессии
+ * @param {Object} params
+ * @param {string} params.sessionId
+ * @param {string} params.event
+ * @param {string} [params.reason]
+ */
+function logChatEvent({ sessionId, event, reason }) {
+    try {
+        const shortSessionId = sessionId ? sessionId.slice(0, 8) : 'unknown';
+        const reasonPart = reason ? ` reason=${sanitizeLogValue(reason)}` : '';
+        const logEntry = `[${formatLogTimestamp()}] session=${sessionId || 'unknown'} sessionShort=${shortSessionId} event=${event}${reasonPart}`;
+        appendLogEntry(logEntry);
+    } catch (error) {
         console.error('⚠️ Ошибка логирования:', error.message);
     }
 }
@@ -87,6 +120,11 @@ setInterval(() => {
     const now = Date.now();
     for (const [sessionId, session] of sessions.entries()) {
         if (now - session.lastActivity > SESSION_TTL) {
+            logChatEvent({
+                sessionId,
+                event: 'session_deleted',
+                reason: 'timeout'
+            });
             sessions.delete(sessionId);
             console.log(`🗑️ Сессия ${sessionId.slice(0, 8)}... удалена (timeout)`);
         }
@@ -294,9 +332,9 @@ async function queryOpenRouter(conversationHistory) {
 // FALLBACK ОТВЕТ (ТОЛЬКО ПРИ ОШИБКЕ AI)
 // ═══════════════════════════════════════════════
 
-const FALLBACK_MESSAGE = `Извините, связь временно недоступна.
+const FALLBACK_MESSAGE = `Извините, чат временно недоступен.
 Позвоните нам: +7 (950) 172-55-14
-Работаем: Пн–Сб 8:00–20:00`;
+Работаем: Пн–Сб 9:00–18:00`;
 
 // ═══════════════════════════════════════════════
 // ОСНОВНОЙ ENDPOINT
@@ -327,12 +365,6 @@ router.post('/', async (req, res) => {
         }
 
         // ─────────────────────────────────────
-        // ЛОГИРОВАНИЕ СООБЩЕНИЯ ПОЛЬЗОВАТЕЛЯ
-        // ─────────────────────────────────────
-
-        logUserMessage(trimmedMessage);
-
-        // ─────────────────────────────────────
         // РАБОТА С СЕССИЕЙ
         // ─────────────────────────────────────
 
@@ -348,6 +380,11 @@ router.post('/', async (req, res) => {
                 createdAt: Date.now(),
                 lastActivity: Date.now()
             });
+            logChatEvent({
+                sessionId,
+                event: 'session_created',
+                reason: 'new_chat'
+            });
             console.log(`🆕 Новая сессия: ${sessionId.slice(0, 8)}...`);
         }
 
@@ -361,6 +398,12 @@ router.post('/', async (req, res) => {
         session.messages.push({
             role: 'user',
             content: trimmedMessage
+        });
+        logChatMessage({
+            sessionId,
+            role: 'user',
+            source: 'client',
+            message: trimmedMessage
         });
 
         console.log(`📩 [${sessionId.slice(0, 8)}] Пользователь: "${trimmedMessage}"`);
@@ -387,10 +430,22 @@ router.post('/', async (req, res) => {
                 role: 'assistant',
                 content: reply
             });
+            logChatMessage({
+                sessionId,
+                role: 'assistant',
+                source: 'ai',
+                message: reply
+            });
         } else {
             // AI недоступен — fallback
             console.log('⚠️ AI недоступен, используем fallback');
             reply = FALLBACK_MESSAGE;
+            logChatMessage({
+                sessionId,
+                role: 'assistant',
+                source: 'fallback',
+                message: reply
+            });
 
             // НЕ сохраняем fallback в историю,
             // чтобы не путать AI в следующем запросе
@@ -427,6 +482,11 @@ router.delete('/session/:sessionId', (req, res) => {
     const { sessionId } = req.params;
     
     if (sessions.has(sessionId)) {
+        logChatEvent({
+            sessionId,
+            event: 'session_deleted',
+            reason: 'manual'
+        });
         sessions.delete(sessionId);
         console.log(`🗑️ Сессия ${sessionId.slice(0, 8)}... удалена вручную`);
         return res.json({ success: true });

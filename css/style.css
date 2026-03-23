@@ -1975,6 +1975,16 @@ section h2 {
 }
 
 /* Форма отправки */
+.chat-disclaimer {
+    padding: 10px 16px 0;
+    font-size: 11px;
+    line-height: 1.45;
+    color: var(--gray);
+    background: #f8f9fa;
+    border-top: 1px solid rgba(15, 23, 42, 0.06);
+    flex-shrink: 0;
+}
+
 .chat-form {
     display: flex;
     padding: 12px 16px;
@@ -2085,6 +2095,11 @@ section h2 {
     .chat-message {
         font-size: 15px;
         padding: 14px 18px;
+    }
+
+    .chat-disclaimer {
+        padding: 12px 20px 0;
+        font-size: 12px;
     }
     
     .chat-form {
