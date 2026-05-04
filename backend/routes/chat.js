@@ -251,6 +251,22 @@ function getSamaraTime() {
     };
 }
 
+const DEFAULT_OPENROUTER_MODEL = 'arcee-ai/trinity-large-preview:free';
+
+function splitOpenRouterModels(value) {
+    return String(value || '')
+        .split(',')
+        .map(model => model.trim())
+        .filter(Boolean);
+}
+
+function getOpenRouterModels() {
+    const primaryModels = splitOpenRouterModels(process.env.OPENROUTER_MODEL || process.env.AI_MODEL || DEFAULT_OPENROUTER_MODEL);
+    const fallbackModels = splitOpenRouterModels(process.env.OPENROUTER_FALLBACK_MODEL);
+
+    return [...new Set([...primaryModels, ...fallbackModels])];
+}
+
 // ═══════════════════════════════════════════════
 // ЗАПРОС К OPENROUTER API
 // ═══════════════════════════════════════════════
@@ -294,49 +310,53 @@ async function queryOpenRouter(conversationHistory) {
         ...conversationHistory
     ];
 
-    const payload = {
-        model: process.env.AI_MODEL || 'arcee-ai/trinity-large-preview:free',
-        messages,
-        temperature: 0.5,
-        max_tokens: 500
-    };
+    const models = getOpenRouterModels();
 
-    try {
-        console.log(`🤖 Отправляем в AI (${conversationHistory.length} сообщений в истории)...`);
-        
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${apiKey}`,
-                'Content-Type': 'application/json; charset=utf-8',
-                'Accept': 'application/json',
-                'HTTP-Referer': 'http://localhost:3000',
-                'X-Title': 'Shinka Chat'
-            },
-            body: JSON.stringify(payload)
-        });
+    for (const model of models) {
+        const payload = {
+            model,
+            messages,
+            temperature: 0.5,
+            max_tokens: 500
+        };
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error(`❌ OpenRouter error ${response.status}: ${errorText}`);
-            return null;
+        try {
+            console.log(`🤖 Отправляем в AI, модель ${model} (${conversationHistory.length} сообщений в истории)...`);
+            
+            const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`,
+                    'Content-Type': 'application/json; charset=utf-8',
+                    'Accept': 'application/json',
+                    'HTTP-Referer': process.env.ALLOWED_ORIGIN || 'http://localhost:3000',
+                    'X-Title': process.env.OPENROUTER_APP_TITLE || 'Shinka Chat'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error(`❌ OpenRouter error ${response.status} (${model}): ${errorText}`);
+                continue;
+            }
+
+            const data = await response.json();
+            const reply = data.choices?.[0]?.message?.content;
+
+            if (reply) {
+                console.log(`✅ AI ответил через ${model}: "${reply.slice(0, 60)}..."`);
+                return reply.trim();
+            }
+
+            console.error(`❌ AI вернул пустой ответ (${model})`);
+        } catch (error) {
+            console.error(`❌ Ошибка запроса к AI (${model}):`, error.message);
         }
-
-        const data = await response.json();
-        const reply = data.choices?.[0]?.message?.content;
-
-        if (reply) {
-            console.log(`✅ AI ответил: "${reply.slice(0, 60)}..."`);
-            return reply.trim();
-        }
-
-        console.error('❌ AI вернул пустой ответ');
-        return null;
-
-    } catch (error) {
-        console.error('❌ Ошибка запроса к AI:', error.message);
-        return null;
     }
+
+    console.error('❌ Все модели OpenRouter недоступны');
+    return null;
 }
 
 // ═══════════════════════════════════════════════
