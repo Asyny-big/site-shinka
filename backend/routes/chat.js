@@ -251,7 +251,7 @@ function getSamaraTime() {
     };
 }
 
-const DEFAULT_OPENROUTER_MODEL = 'arcee-ai/trinity-large-preview:free';
+const DEFAULT_OPENROUTER_MODEL = 'openrouter/free';
 
 function splitOpenRouterModels(value) {
     return String(value || '')
