@@ -95,10 +95,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatInput = document.getElementById('chatInput');
     const chatMessages = document.getElementById('chatMessages');
     const chatTyping = document.getElementById('chatTyping');
+    const chatHint = document.getElementById('chatHint');
+    const chatContactOpen = document.getElementById('chatContactOpen');
     
     let chatOpened = false;
     let isSubmitting = false; // Блокировка повторной отправки
     let chatSessionId = null; // ID сессии для диалога
+    let chatHintTimer = null;
+    let chatHintShown = false;
     
     // Приветственное сообщение (отображается до первого ответа AI)
     const welcomeMessage = '👋 Здравствуйте!\nЭто ИИ-консультант сайта шиномонтажа.\nПодскажу по услугам, ценам и графику работы.\nОтветы справочные, а точные детали лучше уточнить по телефону: +7 (950) 172-55-14.';
@@ -137,9 +141,35 @@ document.addEventListener('DOMContentLoaded', function() {
     function hideTyping() {
         chatTyping.classList.remove('active');
     }
+
+    function hideChatHint() {
+        if (chatHint) {
+            chatHint.classList.remove('active');
+        }
+
+        if (chatToggle) {
+            chatToggle.classList.remove('chat-toggle--attention');
+        }
+
+        if (chatHintTimer) {
+            clearTimeout(chatHintTimer);
+            chatHintTimer = null;
+        }
+    }
+
+    function showChatHint() {
+        if (!chatHint || chatHintShown || chatWindow.classList.contains('active')) return;
+
+        chatHintShown = true;
+        chatHint.classList.add('active');
+        chatToggle.classList.add('chat-toggle--attention');
+        chatHintTimer = setTimeout(hideChatHint, 7500);
+    }
     
     // Открытие чата
     function openChat() {
+        chatHintShown = true;
+        hideChatHint();
         chatToggle.classList.add('active');
         chatWindow.classList.add('active');
         
@@ -291,6 +321,22 @@ document.addEventListener('DOMContentLoaded', function() {
         chatToggle.addEventListener('click', toggleChat);
         chatClose.addEventListener('click', closeChat);
         chatForm.addEventListener('submit', handleSubmit);
+
+        if (chatHint) {
+            chatHint.addEventListener('click', function(e) {
+                e.stopPropagation();
+                openChat();
+            });
+
+            setTimeout(showChatHint, 900);
+        }
+
+        if (chatContactOpen) {
+            chatContactOpen.addEventListener('click', function(e) {
+                e.stopPropagation();
+                openChat();
+            });
+        }
         
         // Закрытие по Escape
         document.addEventListener('keydown', function(e) {

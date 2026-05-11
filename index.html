@@ -41,7 +41,7 @@
     <link rel="manifest" href="/site.webmanifest">
     <meta name="theme-color" content="#e74c3c">
     
-    <link rel="stylesheet" href="css/style.css?v=20260323-chat-ai">
+    <link rel="stylesheet" href="css/style.css?v=20260511-chat-hint">
     
     <script type="application/ld+json">
     {
@@ -749,6 +749,14 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="contact-item contact-item--assistant">
+                            <span class="contact-item__icon">🤖</span>
+                            <div class="contact-item__content">
+                                <span class="contact-item__label">ИИ-ассистент</span>
+                                <span class="contact-item__value contact-item__value--assistant">Подскажет по услугам, ценам и графику. Чат — справа снизу.</span>
+                                <button type="button" class="contact-item__chat-link" id="chatContactOpen">Открыть чат</button>
+                            </div>
+                        </div>
 
                         <a href="tel:+79501725514" class="btn btn--primary btn--large">Позвонить сейчас</a>
                         
@@ -848,6 +856,10 @@
                 <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
             </svg>
         </button>
+        <button class="chat-hint" id="chatHint" type="button" aria-label="Открыть ИИ-консультанта">
+            <span class="chat-hint__badge">ИИ</span>
+            <span class="chat-hint__text">Есть вопрос? Ассистент подскажет</span>
+        </button>
         
         <div class="chat-window" id="chatWindow">
             <div class="chat-header">
@@ -894,6 +906,6 @@
         </div>
     </div>
 
-    <script src="js/main.js?v=20260323-chat-ai"></script>
+    <script src="js/main.js?v=20260511-chat-hint"></script>
 </body>
 </html>

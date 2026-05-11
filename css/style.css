@@ -1245,6 +1245,77 @@ section h2 {
     color: var(--primary);
 }
 
+.contacts__info .contact-item--assistant {
+    padding: 18px;
+    background: linear-gradient(135deg, rgba(29, 53, 87, 0.06) 0%, rgba(230, 57, 70, 0.06) 100%);
+    border: 1px solid rgba(29, 53, 87, 0.12);
+    border-radius: var(--radius);
+    box-shadow: 0 8px 24px rgba(13, 27, 42, 0.06);
+}
+
+.contact-item--assistant .contact-item__icon {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(230, 57, 70, 0.1);
+    border-radius: 12px;
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.contact-item__value--assistant {
+    font-weight: 500;
+    color: var(--dark);
+    line-height: 1.45;
+}
+
+.contact-item__chat-link {
+    align-self: flex-start;
+    margin-top: 10px;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 999px;
+    background: rgba(230, 57, 70, 0.1);
+    color: var(--primary-dark);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.contact-item__chat-link:hover {
+    background: var(--primary);
+    color: var(--white);
+    transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+    .contacts__info .contact-item--assistant {
+        align-items: flex-start;
+        padding: 16px;
+    }
+
+    .contact-item--assistant .contact-item__icon {
+        width: 40px;
+        height: 40px;
+        font-size: 22px;
+    }
+
+    .contact-item--assistant .contact-item__label {
+        display: block;
+        font-size: 13px;
+    }
+
+    .contact-item__chat-link {
+        width: 100%;
+        text-align: center;
+        margin-top: 12px;
+    }
+}
+
 .contacts__map {
     border-radius: var(--radius);
     overflow: hidden;
@@ -1766,6 +1837,88 @@ section h2 {
     transform: rotate(0);
 }
 
+.chat-toggle.chat-toggle--attention {
+    box-shadow: 0 8px 30px rgba(230, 57, 70, 0.38);
+}
+
+.chat-toggle.chat-toggle--attention::after {
+    content: '';
+    position: absolute;
+    inset: -7px;
+    border: 1px solid rgba(230, 57, 70, 0.36);
+    border-radius: 50%;
+    animation: chatAttention 2.6s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes chatAttention {
+    0%, 100% {
+        opacity: 0.2;
+        transform: scale(0.96);
+    }
+    50% {
+        opacity: 0.55;
+        transform: scale(1.08);
+    }
+}
+
+.chat-hint {
+    position: absolute;
+    right: 74px;
+    bottom: 7px;
+    max-width: 280px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px 10px 10px;
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(29, 53, 87, 0.12);
+    border-radius: 18px 18px 4px 18px;
+    box-shadow: 0 12px 30px rgba(13, 27, 42, 0.14);
+    color: var(--secondary);
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateX(10px) scale(0.98);
+    transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s ease, box-shadow 0.35s ease;
+    backdrop-filter: blur(12px);
+}
+
+.chat-hint.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(0) scale(1);
+}
+
+.chat-hint.active:hover {
+    box-shadow: 0 16px 36px rgba(13, 27, 42, 0.18);
+    transform: translateX(0) translateY(-1px) scale(1);
+}
+
+.chat-hint__badge {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: rgba(230, 57, 70, 0.1);
+    color: var(--primary-dark);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.chat-hint__text {
+    font-size: 13px;
+    line-height: 1.35;
+    font-weight: 600;
+}
+
 /* Окно чата */
 .chat-window {
     position: absolute;
@@ -2048,6 +2201,24 @@ section h2 {
     .chat-toggle__icon {
         width: 24px;
         height: 24px;
+    }
+
+    .chat-hint {
+        right: 66px;
+        bottom: 6px;
+        max-width: min(240px, calc(100vw - 100px));
+        padding: 9px 10px;
+        border-radius: 16px 16px 4px 16px;
+    }
+
+    .chat-hint__badge {
+        width: 28px;
+        height: 28px;
+        font-size: 11px;
+    }
+
+    .chat-hint__text {
+        font-size: 12px;
     }
     
     .chat-window {
