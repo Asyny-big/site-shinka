@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Allow: /images/
+Allow: /assets/
+Allow: /fonts/
+Disallow: /backend/
+Disallow: /node_modules/
+Disallow: /.git/
+Disallow: /*.json$
+Disallow: /.env
+Disallow: /.gitignore
+
+Sitemap: https://ydenisa.ru/sitemap.xml
+Host: https://ydenisa.ru

@@ -1,0 +1,93 @@
+/* ---------- колесо: общий вид (hero — «живое») ---------- */
+.wheel .w-tread { fill: #1c1c1a; }
+.wheel .w-groove { stroke: #050505; stroke-width: 4; }
+.wheel .w-bead { stroke: rgba(255, 255, 255, 0.07); stroke-width: 2; }
+.wheel .w-emboss {
+  font: 900 30px var(--f-display); letter-spacing: 0.2em; fill: #34332f;
+  paint-order: stroke; stroke: #0a0a09; stroke-width: 1.2px;
+}
+.wheel .w-emboss--s { font: 700 21px var(--f-mono); letter-spacing: 0.24em; fill: #2d2c29; }
+.wheel .w-stud { fill: #6e6c66; }
+.wheel .w-stud.is-missing { fill: none; stroke: #6e6c66; stroke-width: 1.5; }
+.wheel .w-dmg { opacity: 0; transition: opacity var(--d-2); }
+.wheel .w-dmg path, .wheel .w-dmg circle, .wheel .w-dmg ellipse { fill: none; stroke: var(--acc); stroke-width: 4; }
+.wheel .w-lip { fill: none; stroke: var(--w-metal-hi); stroke-width: 12; }
+.wheel .w-barrel { fill: #101010; }
+.wheel .w-face-dark { fill: #121211; }
+.wheel .w-spokes { stroke: rgba(0, 0, 0, 0.35); stroke-width: 1.5; }
+.wheel .w-steel { display: none; }
+.wheel .w-holes ellipse { fill: #0f0f0e; }
+.wheel .w-steel-ring { stroke: rgba(0, 0, 0, 0.3); stroke-width: 3; }
+.wheel .w-hub { stroke: rgba(0, 0, 0, 0.4); stroke-width: 2; }
+.wheel .w-lugs circle { fill: #2a2a28; stroke: #8f8d86; stroke-width: 2; }
+.wheel .w-cap { fill: #0d0d0c; stroke: var(--acc); stroke-width: 5; }
+.wheel .w-valve { fill: #2b2b29; }
+.wheel .w-weight { fill: none; stroke: #8e8c85; stroke-width: 14; opacity: 0.0; }
+.wheel .w-ticks { stroke: var(--line-d2); stroke-width: 1.5; }
+.wheel .w-rim-scale { transform-box: fill-box; transform-origin: center; }
+
+/* ---------- колесо: «чертёж» (прайс) ---------- */
+.wheel--spec .w-band { stroke: rgba(242, 240, 235, 0.035); }
+.wheel--spec .w-tread { fill: none; stroke: var(--line-d2); stroke-width: 1.4; transition: stroke var(--d-2); }
+.wheel--spec .w-groove { stroke: var(--line-d2); stroke-width: 1.2; }
+.wheel--spec .w-bead { stroke: var(--line-d2); stroke-width: 1.2; stroke-dasharray: 6 8; }
+.wheel--spec .w-emboss { fill: rgba(242, 240, 235, 0.26); stroke: none; font-size: 26px; }
+.wheel--spec .w-lip { stroke: var(--chalk); stroke-width: 2.6; transition: stroke var(--d-2); }
+.wheel--spec .w-barrel { fill: none; stroke: var(--line-d2); stroke-width: 1.2; }
+.wheel--spec .w-face { fill: none; stroke: var(--line-d); stroke-width: 1; }
+.wheel--spec .w-face-dark { fill: none; }
+.wheel--spec .w-spokes { fill: rgba(242, 240, 235, 0.05); stroke: var(--chalk); stroke-width: 1.8; transition: stroke var(--d-2), fill var(--d-2); }
+.wheel--spec .w-holes ellipse { fill: rgba(242, 240, 235, 0.05); stroke: var(--chalk); stroke-width: 1.8; }
+.wheel--spec .w-steel-ring { stroke: var(--line-d2); stroke-width: 1.2; }
+.wheel--spec .w-hub { fill: none; stroke: var(--chalk); stroke-width: 1.8; }
+.wheel--spec .w-lugs circle { fill: none; stroke: var(--chalk); stroke-width: 1.6; }
+.wheel--spec .w-cap { fill: none; stroke: var(--acc); stroke-width: 2.5; }
+.wheel--spec .w-valve { fill: none; stroke: var(--chalk); stroke-width: 1.5; }
+.wheel--spec .w-studs { opacity: 0; transition: opacity var(--d-2); }
+.wheel--spec .w-stud { fill: var(--chalk); }
+.wheel--spec .w-stud.is-missing { fill: none; stroke: var(--acc); stroke-width: 2; }
+.wheel--spec .w-weight { stroke: var(--acc); opacity: 0; transition: opacity var(--d-2); }
+.wheel--spec .w-ticks { stroke: var(--line-d); }
+
+/* велосипедное колесо */
+.b-tire-ring { stroke: var(--chalk); stroke-width: 22; opacity: 0.18; }
+.b-knobs { fill: none; stroke: var(--line-d2); stroke-width: 1.2; }
+.b-rim-ring { stroke: var(--chalk); stroke-width: 2.6; }
+.b-rim-ring--in { stroke-width: 1.2; opacity: 0.6; }
+.b-spokes { stroke: var(--chalk); stroke-width: 1.1; opacity: 0.75; }
+.b-hub { fill: none; stroke: var(--chalk); stroke-width: 1.8; }
+.b-axle { fill: none; stroke: var(--acc); stroke-width: 2.5; }
+.b-disc { stroke: var(--line-d2); stroke-width: 6; stroke-dasharray: 4 10; }
+
+/* состояния схемы */
+.px__car, .px__bike { transition: opacity var(--d-3) var(--e-out), transform var(--d-3) var(--e-out); transform-box: fill-box; transform-origin: center; }
+.px__bike { opacity: 0; transform: scale(0.9); }
+[data-state='bike'] .px__car, [data-state='buyout'] .px__car { opacity: 0; transform: scale(1.08); }
+[data-state='bike'] .px__bike, [data-state='buyout'] .px__bike { opacity: 1; transform: none; }
+
+[data-state='repair'] .w-tread { stroke: rgba(255, 79, 18, 0.55); }
+[data-state='repair'][data-opt='plug'] .w-dmg--puncture,
+[data-state='repair'][data-opt='patch'] .w-dmg--puncture,
+[data-state='repair'][data-opt='cut'] .w-dmg--cut,
+[data-state='repair'][data-opt='bulge'] .w-dmg--bulge { opacity: 1; }
+[data-state='rims'] .w-lip, [data-state='rims'] .w-spokes, [data-state='rims'] .w-holes ellipse { stroke: var(--acc); }
+[data-variant='steel'] .w-alloy { display: none; }
+[data-variant='steel'] .w-steel { display: inline; }
+[data-state='studs'] .w-studs { opacity: 1; }
+[data-state='balance'] .w-weight { opacity: 1; }
+[data-state='season'] .w-lip { stroke: var(--acc); }
+
+/* аннотации */
+.anno { pointer-events: none; }
+.anno__dim { stroke: var(--acc); stroke-width: 2; fill: none; opacity: 0; transition: opacity var(--d-2); }
+.anno__dim .anno__arr { fill: var(--acc); stroke: none; }
+[data-state='season'] .anno__dim { opacity: 1; }
+.anno__lead { fill: none; stroke: var(--acc); stroke-width: 2; stroke-dasharray: 2 0; }
+.anno__dot { fill: var(--ink); stroke: var(--acc); stroke-width: 3; }
+.anno__txt { font: 700 30px var(--f-mono); letter-spacing: 0.08em; fill: var(--acc); text-transform: uppercase; }
+
+/* плавные переходы схемы */
+.wheel--spec .w-rim-scale { transition: transform 0.8s var(--e-out); }
+.anno__dim { transform-box: view-box; transform-origin: 0 0; transition: transform 0.8s var(--e-out), opacity var(--d-2); }
+.px__bike [data-px-bike] { transform-origin: 0 0; }
+.anno__txt, .anno__lead, .anno__dot { transition: opacity var(--d-2); }

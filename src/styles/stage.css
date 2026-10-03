@@ -1,0 +1,62 @@
+/* ==========================================================
+   СЦЕНА: фиксированный «павильон» за контентом.
+   bg → заливка-диафрагма → проходящее слово → тень → 3D-колесо
+   ========================================================== */
+.stage { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.stage__bg { position: absolute; inset: 0; background: var(--stage-bg, var(--ink)); }
+.stage__flood {
+  position: absolute; inset: 0; background: var(--flood, var(--acc));
+  clip-path: circle(var(--fr, 0px) at var(--fx, 50%) var(--fy, 50%));
+  will-change: clip-path;
+}
+.stage__grid {
+  position: absolute; inset: -2px; opacity: var(--grid-o, 0.5);
+  background-image:
+    linear-gradient(var(--grid-c, rgba(242, 240, 235, 0.06)) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-c, rgba(242, 240, 235, 0.06)) 1px, transparent 1px);
+  background-size: calc(100vw / 12) calc(100vw / 12);
+  transform: translate3d(0, var(--grid-y, 0px), 0);
+  -webkit-mask-image: radial-gradient(120vh 90vh at 70% 50%, #000 20%, transparent 75%);
+  mask-image: radial-gradient(120vh 90vh at 70% 50%, #000 20%, transparent 75%);
+}
+.stage__word {
+  position: absolute; left: 0; top: 50%; white-space: nowrap; transform: translate3d(var(--wx, 100vw), -50%, 0);
+  font: 900 clamp(6rem, 26vh, 22rem) / 0.8 var(--f-display); letter-spacing: var(--ls-d); text-transform: uppercase;
+  color: var(--word-c, var(--chalk)); opacity: var(--wo, 0);
+  will-change: transform;
+}
+.stage__word span { display: inline-block; transform: skewX(var(--wskew, 0deg)); }
+.stage__shadow {
+  position: absolute; left: 0; top: 0; width: var(--sw, 0px); height: calc(var(--sw, 0px) * 0.16);
+  transform: translate3d(calc(var(--sx, 0px) - 50%), calc(var(--sy, 0px) - 50%), 0);
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.55), transparent);
+  opacity: var(--so, 0); filter: blur(6px);
+}
+.stage__gl { position: absolute; left: 0; top: 0; width: 100vw; height: 100vh; }
+.stage__svg { position: absolute; left: 0; top: 0; display: none; width: var(--svs, 60vh); height: var(--svs, 60vh); transform: translate3d(calc(var(--svx, 50vw) - 50%), calc(var(--svy, 50vh) - 50%), 0); }
+.stage__svg .wheel { width: 100%; height: 100%; }
+.no-gl .stage__svg { display: block; }
+.no-gl .stage__gl { display: none; }
+
+.stage__title {
+  position: absolute; left: var(--g); top: 50%; transform: translate3d(0, -50%, 0);
+  font: 900 clamp(5rem, 22vw, 26rem) / 0.8 var(--f-display); letter-spacing: var(--ls-d); text-transform: uppercase; white-space: nowrap;
+  color: transparent; -webkit-text-stroke: 1.5px var(--st-c, rgba(242, 240, 235, 0.16)); opacity: var(--st-o, 0); transition: opacity 0.5s;
+}
+.stage__title span { display: inline-block; animation: stIn 0.9s var(--e-out) both; }
+@keyframes stIn { from { transform: translateY(30%); opacity: 0; filter: blur(8px); } }
+
+/* зона захвата колеса мышью / пальцем */
+.wheelhit {
+  position: fixed; left: 0; top: 0; z-index: 3; width: 0; height: 0; border-radius: 50%;
+  pointer-events: none; touch-action: pan-y; cursor: grab;
+}
+.wheelhit.is-on { pointer-events: auto; }
+.wheelhit.is-grab { cursor: grabbing; }
+
+/* контент — над сценой */
+main, .foot { position: relative; z-index: 2; }
+.sc { position: relative; }
+.sc.on-ink { color: var(--chalk); }
+.sc.on-paper, .sc.on-acc { color: var(--graphite); color-scheme: light; --line: var(--line-p); --line2: var(--line-p2); --muted: var(--dim-p); --accT: var(--acc-ink); }
+.sc.on-acc { --muted: #3b1306; --accT: var(--ink); --line: rgba(13, 13, 12, 0.18); --line2: rgba(13, 13, 12, 0.45); }

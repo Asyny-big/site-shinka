@@ -1,0 +1,14 @@
+/* Порядок важен. Сборщик (scripts/build.mjs) склеивает файлы по этим @import. */
+@import 'tokens.css';
+@import 'base.css';
+@import 'wheel.css';
+@import 'stage.css';
+@import 'chrome.css';
+@import 'hero.css';
+@import 'anatomy.css';
+@import 'prices.css';
+@import 'works.css';
+@import 'mileage.css';
+@import 'ask.css';
+@import 'finish.css';
+@import 'motion.css';

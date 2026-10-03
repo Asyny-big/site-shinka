@@ -1,0 +1,84 @@
+/* ==========================================================
+   СЦЕНА 01 — АНАТОМИЯ. Камера облетает колесо: протектор → боковина →
+   диск → баланс → шипы → велосипед. Секция «приколота» к экрану.
+   ========================================================== */
+.anat { color: var(--chalk); }
+.js .anat { height: calc(var(--steps) * 85vh + 100vh); padding-top: 30vh; }
+.anat__pin { position: relative; padding: var(--sec) var(--g); }
+.js .anat__pin { position: sticky; top: 0; height: 100vh; height: 100svh; padding: calc(var(--hh) + 3vh) var(--g) 3vh; overflow: hidden; }
+.anat__head { position: relative; z-index: 2; }
+.anat__kick { color: var(--dim); margin-bottom: 10px; }
+.anat__h { font: 900 clamp(1.4rem, min(0.8rem + 2.2vw, 5vh), 3.2rem) / 0.95 var(--f-display); letter-spacing: var(--ls-d); text-transform: uppercase; }
+
+.anat__steps { position: relative; z-index: 2; margin-top: 4vh; }
+.step { max-width: 34rem; padding: 28px 0; border-top: 1px solid var(--line-d); }
+.js .anat__steps { height: calc(100% - 9rem - 12vh); }
+.js .step { position: absolute; left: 0; top: 54%; transform: translateY(-50%); border: 0; padding: 0; width: min(46rem, 46vw); visibility: hidden; }
+.js .step.is-active { visibility: visible; }
+.step__k { color: var(--dim); }
+.step__k b { color: var(--acc); }
+.step__t {
+  margin-top: 12px; padding-top: 0.12em; font: 900 clamp(2.4rem, min(5.9vw, 10vh), 8rem) / 0.9 var(--f-display); letter-spacing: var(--ls-g); text-transform: uppercase;
+}
+.step__d { margin-top: 18px; font-size: var(--t-lg); max-width: 30em; color: rgba(242, 240, 235, 0.86); }
+.step__rows { margin-top: 22px; display: grid; gap: 10px; font-size: var(--t-lg); max-width: 28rem; }
+@media (min-width: 900px) and (max-height: 800px) {
+  .step__d { margin-top: 10px; font-size: var(--t-md); }
+  .step__rows { margin-top: 12px; gap: 4px; font-size: var(--t-md); }
+  .step__n { display: none; }
+  .step__acts { margin-top: 14px; }
+}
+.step__rows b { font: 900 1.35em / 1 var(--f-display); letter-spacing: var(--ls-d); color: var(--chalk); }
+.step__rows li:first-child b { color: var(--acc); }
+.step__n { margin-top: 14px; color: var(--dim); font-size: var(--t-sm); max-width: 30em; }
+.step__acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+.step__acts .btn { border-radius: 999px; }
+
+/* «вход» шага: строки выезжают из-под маски */
+.js .step > * { opacity: 0; transform: translate3d(0, 24px, 0); transition: opacity 0.5s, transform 0.8s var(--e-out); }
+.js .step.is-active > * { opacity: 1; transform: none; }
+.js .step.is-active > :nth-child(2) { transition-delay: 0.05s; }
+.js .step.is-active > :nth-child(3) { transition-delay: 0.1s; }
+.js .step.is-active > :nth-child(4) { transition-delay: 0.16s; }
+.js .step.is-active > :nth-child(5) { transition-delay: 0.22s; }
+.js .step.is-active > :nth-child(6) { transition-delay: 0.28s; }
+.js .step .step__t { transform: translate3d(0, 34%, 0) skewY(5deg); filter: blur(6px); }
+.js .step.is-active .step__t { transform: none; filter: none; transition: transform 0.9s var(--e-out), opacity 0.4s, filter 0.6s; }
+
+.anat__nav { display: none; }
+.js .anat__nav {
+  position: absolute; left: var(--g); right: var(--g); bottom: 3vh; z-index: 2; display: grid; grid-template-columns: repeat(6, 1fr);
+  padding-left: 200px;
+}
+.anat__nav a { position: relative; display: flex; gap: 8px; align-items: baseline; padding: 14px 8px 6px 0; text-decoration: none; color: var(--dim); font-size: var(--t-sm); border-top: 1px solid var(--line-d2); transition: color 0.3s; }
+.anat__nav a::before { content: ''; position: absolute; left: 0; top: -1px; height: 2px; width: 100%; background: var(--acc); transform: scaleX(var(--p, 0)); transform-origin: left; }
+.anat__nav a.is-active { color: var(--chalk); }
+.anat__nav .mono { color: var(--acc); }
+
+/* выноска к точке на колесе */
+.callout { position: fixed; left: 0; top: 0; z-index: 3; pointer-events: none; opacity: 0; transition: opacity 0.4s; }
+.callout.is-on { opacity: 1; }
+.callout__l { position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; overflow: visible; }
+.callout__l path { fill: none; stroke: var(--acc); stroke-width: 1.5; }
+.callout__dot { position: fixed; left: -7px; top: -7px; width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--acc); background: var(--ink); transform: translate3d(var(--cx, -99px), var(--cy, -99px), 0); box-shadow: 0 0 0 8px rgba(255, 79, 18, 0.18); }
+.callout__t { position: fixed; left: 0; top: 0; transform: translate3d(var(--lx, -999px), var(--ly, -999px), 0); background: var(--acc); color: var(--ink); padding: 6px 10px; border-radius: 6px; font-weight: 700; white-space: nowrap; }
+
+@media (max-width: 899px) {
+  .js .anat { height: calc(var(--steps) * 90vh + 100vh); padding-top: 20vh; }
+  .js .anat__pin { padding: calc(var(--hh) + 10px) var(--g) calc(var(--mb) + 10px); display: flex; flex-direction: column; }
+  .anat__h { font-size: 1.35rem; }
+  .js .anat__steps { flex: 1; height: auto; margin-top: 0; }
+  .js .step {
+    top: auto; bottom: 0; transform: none; width: 100%; max-width: none; padding: 18px 16px 16px; border-radius: 18px;
+    background: linear-gradient(180deg, rgba(13, 13, 12, 0.55), rgba(13, 13, 12, 0.92)); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    border: 1px solid var(--line-d);
+  }
+  .step__t { font-size: clamp(1.9rem, 10.5vw, 3.4rem); margin-top: 6px; overflow-wrap: break-word; }
+  .step__d { font-size: 0.9375rem; margin-top: 8px; }
+  .step__rows { font-size: 0.9375rem; margin-top: 12px; gap: 6px; }
+  .step__n { display: none; }
+  .step__acts { margin-top: 14px; }
+  .step__acts .btn--sm { min-height: 40px; }
+  .js .anat__nav { display: none; }
+  .callout__t { font-size: 0.625rem; padding: 4px 7px; }
+}

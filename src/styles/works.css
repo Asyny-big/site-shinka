@@ -1,0 +1,82 @@
+/* ==========================================================
+   СЦЕНА 03 — МАСТЕРСКАЯ. Реальные фото собраны в «барабан»,
+   как протектор: прокрутка вращает его.
+   ========================================================== */
+.works { color: var(--chalk); }
+.js .works { height: calc(var(--n) * 70vh + 160vh); padding-top: 60vh; }
+.works__pin { padding: var(--sec) var(--g); display: grid; gap: 24px; }
+.js .works__pin { position: sticky; top: 0; height: 100vh; height: 100svh; padding: calc(var(--hh) + 3vh) var(--g) 3vh; overflow: hidden; grid-template-rows: auto 1fr auto; }
+.works__head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 24rem); gap: 6px 32px; align-items: end; position: relative; z-index: 2; }
+.works__kick { grid-column: 1 / -1; color: var(--dim); }
+.works__h { font: 900 clamp(1.8rem, 0.8rem + 3vw, 4.4rem) / 0.9 var(--f-display); letter-spacing: var(--ls-d); text-transform: uppercase; max-width: 15em; text-wrap: balance; }
+.works__lead { color: var(--dim); }
+
+.drum { position: relative; perspective: 1400px; perspective-origin: 50% 40%; min-height: 0; }
+.drum__cyl { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.js .drum__cyl {
+  --fw: min(40vw, 62vh); --R: calc(var(--fw) * 0.98);
+  position: absolute; left: 50%; top: 50%; width: var(--fw); aspect-ratio: 4 / 3; display: block;
+  transform-style: preserve-3d;
+  transform: translate(-50%, -50%) translateZ(calc(var(--R) * -1)) rotateX(var(--tilt-x, 0deg)) rotateY(var(--rot, 0deg));
+}
+.js .face {
+  position: absolute; inset: 0; transform-style: preserve-3d; backface-visibility: hidden;
+  transform: rotateY(calc(var(--i) * (360deg / var(--n)))) translateZ(var(--R));
+  opacity: var(--fo, 1); transition: opacity 0.4s;
+}
+.face__btn { position: relative; display: block; width: 100%; aspect-ratio: 4 / 3; cursor: zoom-in; border-radius: 16px; overflow: hidden; background: var(--ink-3); }
+.js .face__btn { height: 100%; aspect-ratio: auto; box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5); }
+.face__img { position: absolute; inset: 0; }
+.face__img img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(var(--fg, 0.6)) contrast(1.06) brightness(var(--fb, 0.8)); transform: scale(1.08) translate3d(var(--px, 0px), var(--py, 0px), 0); transition: filter 0.5s; }
+.face__ph {
+  position: absolute; inset: 0; display: none; flex-direction: column; justify-content: space-between; padding: 18px;
+  background: repeating-linear-gradient(135deg, rgba(242, 240, 235, 0.05) 0 1px, transparent 1px 14px), linear-gradient(160deg, #23231f, #121211);
+  color: var(--dim);
+}
+.face__ph b { font: 900 clamp(1.6rem, 3vw, 3rem) / 0.9 var(--f-display); color: var(--chalk); letter-spacing: var(--ls-d); }
+.face.is-missing .face__ph { display: flex; }
+.face.is-missing img { opacity: 0; }
+.face__n { position: absolute; left: 12px; top: 12px; background: var(--acc); color: var(--ink); padding: 3px 7px; border-radius: 5px; }
+.face__cap { margin-top: 10px; font-weight: 600; }
+.face__cap .mono { color: var(--acc); margin-right: 6px; }
+.face__geo { color: var(--dim) !important; }
+.js .face__cap { position: absolute; left: 0; right: 0; top: calc(100% + 12px); opacity: var(--cap-o, 0); transition: opacity 0.3s; }
+
+.works__ctrl { position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; gap: 18px; }
+.rbtn { width: 52px; height: 52px; border-radius: 50%; border: 1px solid var(--line-d2); font-size: 1.2rem; transition: background 0.2s, color 0.2s, transform 0.35s var(--e-out); }
+.rbtn:hover { background: var(--acc); color: var(--ink); border-color: var(--acc); }
+.works__count { color: var(--dim); }
+.works__count b { font: 900 2rem/1 var(--f-display); color: var(--chalk); margin-right: 4px; }
+
+/* лайтбокс */
+.lb { width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: rgba(8, 8, 7, 0.96); color: var(--chalk); }
+.lb[open] { display: grid; place-items: center; animation: lbIn 0.4s var(--e-out); }
+.lb::backdrop { background: rgba(0, 0, 0, 0.6); }
+@keyframes lbIn { from { opacity: 0; clip-path: circle(0% at 50% 50%); } to { clip-path: circle(100% at 50% 50%); } }
+.lb__frame { display: grid; gap: 12px; max-width: min(92vw, 1400px); }
+.lb__frame img { max-height: 80dvh; width: auto; max-width: 100%; object-fit: contain; margin: 0 auto; border-radius: 12px; }
+.lb__cap { display: flex; gap: 16px; align-items: baseline; }
+.lb__cap .mono { color: var(--acc); }
+.lb__btn { position: fixed; width: 52px; height: 52px; display: grid; place-items: center; border: 1px solid var(--line-d2); background: var(--ink); border-radius: 50%; font-size: 1.3rem; }
+.lb__btn:hover { border-color: var(--acc); color: var(--acc); }
+.lb__prev { left: 16px; top: 50%; transform: translateY(-50%); }
+.lb__next { right: 16px; top: 50%; transform: translateY(-50%); }
+.lb__close { right: 16px; top: 16px; }
+
+@media (max-width: 899px) {
+  .js .works { height: calc(var(--n) * 60vh + 100vh); }
+  .works__head { grid-template-columns: 1fr; }
+  .works__lead { font-size: var(--t-sm); }
+  .js .drum__cyl { --fw: min(74vw, 46vh); --R: calc(var(--fw) * 0.98); }
+  .js .works__pin { padding-bottom: calc(var(--mb) + 8px); }
+  .lb__prev, .lb__next { top: auto; bottom: 20px; transform: none; }
+}
+
+/* reduced motion: барабан превращается в обычную сетку кадров */
+.rm .works { height: auto; padding-top: 30vh; }
+.rm .works__pin { position: static; height: auto; overflow: visible; }
+.rm .drum__cyl { position: static; transform: none; width: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; aspect-ratio: auto; }
+.rm .face { position: relative; transform: none; opacity: 1; }
+.rm .face__btn { aspect-ratio: 4 / 3; height: auto; }
+.rm .face__cap { position: static; opacity: 1; }
+.rm .works__ctrl { display: none; }

@@ -1,0 +1,176 @@
+/* ==========================================================
+   ОБОЛОЧКА: шапка, лимб-навигация, HUD, курсор, загрузчик, меню
+   ========================================================== */
+
+/* ---------- шапка ---------- */
+.top {
+  position: fixed; inset: 0 0 auto; z-index: 50; height: var(--hh);
+  display: flex; align-items: center; gap: clamp(10px, 1.4vw, 22px);
+  padding: env(safe-area-inset-top, 0px) var(--g) 0;
+  color: var(--top-c, var(--chalk)); mix-blend-mode: normal;
+  transition: color 0.4s;
+}
+.top::before {
+  content: ''; position: absolute; inset: 0; z-index: -1; opacity: var(--top-bg-o, 0);
+  background: var(--top-bg, rgba(13, 13, 12, 0.7)); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  transition: opacity 0.4s, background 0.4s;
+}
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; margin-right: auto; min-height: 44px; }
+.brand__mark { width: max(36px, 2.25rem); height: max(36px, 2.25rem); display: block; will-change: transform; }
+.mark { width: 100%; height: 100%; }
+.mark__tire { fill: none; stroke: currentColor; stroke-width: 10; }
+.mark__rim { fill: none; stroke: currentColor; stroke-width: 2.5; }
+.mark__spokes { stroke: currentColor; stroke-width: 4; stroke-linecap: round; }
+.mark__hub, .mark__dot { fill: var(--acc); }
+.brand__t { display: flex; flex-direction: column; line-height: 1.05; }
+.brand__t b { font: 900 1.1rem / 1 var(--f-display); text-transform: uppercase; letter-spacing: -0.01em; }
+.brand__t small { font: 400 0.6875rem / 1.3 var(--f-mono); letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.7; margin-top: 3px; }
+.top__status { font: 400 var(--t-xs) / 1 var(--f-mono); letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap; opacity: 0.85; }
+.top__phone {
+  display: inline-flex; align-items: center; gap: 8px; min-height: max(44px, 2.75rem); padding: 0 0.95rem;
+  font: 600 var(--t-sm) / 1 var(--f-text); text-decoration: none; white-space: nowrap; font-variant-numeric: tabular-nums;
+  background: var(--acc); color: var(--ink); border-radius: 999px; transition: transform 0.35s var(--e-out), background 0.2s;
+}
+.top__phone:hover { background: var(--chalk); }
+.top__ai, .top__menu {
+  display: inline-flex; align-items: center; gap: 8px; min-height: max(44px, 2.75rem); padding: 0 0.85rem;
+  border: 1px solid currentColor; border-radius: 999px; font: 700 var(--t-xs) / 1 var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase;
+  transition: transform 0.35s var(--e-out), background 0.2s, color 0.2s;
+}
+.top__ai .ico { color: var(--acc); }
+.top__ai:hover, .top__menu:hover { background: var(--chalk); color: var(--ink); border-color: var(--chalk); }
+.top__burger { display: grid; gap: 4px; width: 16px; }
+.top__burger i { height: 2px; background: currentColor; }
+@media (max-width: 1023px) { .top__ai { display: none; } }
+@media (max-width: 899px) {
+  .top__phone span, .top__status span, .top__menu-t { display: none; }
+  .top__phone { width: 44px; padding: 0; justify-content: center; }
+  .top__menu { width: 44px; padding: 0; justify-content: center; }
+  .top__status { padding: 8px; }
+}
+@media (max-width: 359px) { .brand__t small { display: none; } }
+
+/* ---------- лимб-навигация (desktop) ---------- */
+.dial { position: fixed; left: var(--g); bottom: clamp(18px, 3vh, 32px); z-index: 50; display: flex; align-items: center; gap: 14px; color: var(--top-c, var(--chalk)); transition: color 0.4s, opacity 0.4s, transform 0.5s var(--e-out), visibility 0.4s; }
+/* в «текстовых» сценах одометр-навигация уходит, чтобы не перекрывать контент (меню остаётся в шапке) */
+html[data-act="prices"] .dial, html[data-act="mileage"] .dial, html[data-act="ask"] .dial, html[data-act="finish"] .dial { opacity: 0; visibility: hidden; transform: translate3d(-40px, 0, 0); }
+@media (max-height: 820px) { html[data-act="hero"] .dial { opacity: 0; visibility: hidden; transform: translate3d(-40px, 0, 0); } }
+.dial__knob { width: max(64px, 4rem); height: max(64px, 4rem); border-radius: 50%; transition: transform 0.3s var(--e-out); }
+.dial__knob:hover { transform: scale(1.06); }
+.dial__knob svg { width: 100%; height: 100%; }
+.dial__ring { fill: rgba(13, 13, 12, 0.35); stroke: currentColor; stroke-opacity: 0.35; stroke-width: 1.5; }
+.dial__ticks line { stroke: currentColor; stroke-width: 2; }
+.dial__ticks line.is-on { stroke: var(--acc); stroke-width: 3; }
+.dial__needle { stroke: currentColor; stroke-width: 2; }
+.dial__tip { fill: var(--acc); }
+.dial__hub { fill: currentColor; }
+.dial__read { display: grid; line-height: 1.1; }
+.dial__deg { font: 900 1.4rem / 1 var(--f-display); letter-spacing: var(--ls-d); font-variant-numeric: tabular-nums; }
+.dial__lab { font: 400 var(--t-xs) / 1.4 var(--f-mono); letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.75; }
+.dial__list {
+  position: absolute; left: 0; bottom: calc(100% + 12px); min-width: 220px; padding: 8px;
+  background: rgba(13, 13, 12, 0.92); color: var(--chalk); border: 1px solid var(--line-d2); border-radius: 14px;
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  opacity: 0; transform: translateY(8px) scale(0.98); transform-origin: bottom left; pointer-events: none;
+  transition: opacity 0.25s, transform 0.35s var(--e-out);
+}
+.dial.is-open .dial__list, .dial:focus-within .dial__list { opacity: 1; transform: none; pointer-events: auto; }
+@media (hover: hover) { .dial:hover .dial__list { opacity: 1; transform: none; pointer-events: auto; } }
+.dial__list a { display: flex; gap: 12px; align-items: baseline; padding: 9px 10px; border-radius: 8px; text-decoration: none; font-weight: 600; }
+.dial__list a .mono { color: var(--acc); min-width: 3.2em; }
+.dial__list a:hover, .dial__list a.is-active { background: rgba(242, 240, 235, 0.08); }
+.dial__list a.is-active { color: var(--acc); }
+@media (max-width: 899px), (max-height: 520px) { .dial { display: none; } }
+
+/* ---------- HUD-рамка ---------- */
+.hud { position: fixed; inset: 0; z-index: 40; pointer-events: none; color: var(--top-c, var(--chalk)); transition: color 0.4s; }
+.hud__c { position: absolute; width: 18px; height: 18px; border: 0 solid currentColor; opacity: 0.55; }
+.hud__c--tl { left: 12px; top: calc(var(--hh) + 8px); border-left-width: 1.5px; border-top-width: 1.5px; }
+.hud__c--tr { right: 12px; top: calc(var(--hh) + 8px); border-right-width: 1.5px; border-top-width: 1.5px; }
+.hud__c--bl { left: 12px; bottom: 12px; border-left-width: 1.5px; border-bottom-width: 1.5px; }
+.hud__c--br { right: 12px; bottom: 12px; border-right-width: 1.5px; border-bottom-width: 1.5px; }
+.hud__coord { position: absolute; right: 40px; top: calc(var(--hh) + 10px); opacity: 0.55; transition: opacity 0.4s; }
+html[data-act]:not([data-act="hero"]) .hud__coord, html[data-act]:not([data-act="hero"]) .hud__scene { opacity: 0; }
+.hud__scene { position: absolute; left: 40px; top: calc(var(--hh) + 10px); opacity: 0.75; transition: opacity 0.4s; }
+.hud__scene b { color: var(--acc); }
+@media (max-width: 899px) { .hud { display: none; } }
+
+/* ---------- курсор-спутник ---------- */
+.cur { position: fixed; left: 0; top: 0; z-index: 999; pointer-events: none; display: none; transform: translate3d(-200px, -200px, 0); }
+.has-cursor .cur { display: block; }
+.cur i {
+  position: absolute; left: -16px; top: -16px; width: 32px; height: 32px; border-radius: 50%;
+  border: 1.5px solid var(--acc); transition: transform 0.35s var(--e-out), background 0.25s, border-color 0.25s;
+}
+.cur span {
+  position: absolute; left: 22px; top: -9px; white-space: nowrap; font: 700 0.6875rem / 1 var(--f-mono);
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink); background: var(--acc); padding: 4px 7px; border-radius: 4px;
+  opacity: 0; transform: translateX(-6px); transition: opacity 0.2s, transform 0.3s var(--e-out);
+}
+.cur.is-on i { transform: scale(1.7); background: rgba(255, 79, 18, 0.12); }
+.cur.is-on span { opacity: 1; transform: none; }
+.cur.is-down i { transform: scale(0.8); }
+
+/* ---------- загрузчик «накачка» ---------- */
+.loader { display: none; }
+.js:not(.seen) .loader {
+  position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; align-content: center; gap: 6px;
+  background: var(--ink); color: var(--chalk);
+  animation: loaderAuto 0.01s 4s forwards; /* страховка: если JS не снял — исчезнет сам */
+}
+.loader.is-out { clip-path: circle(0% at 50% 50%); transition: clip-path 0.9s var(--e-io); }
+.js:not(.seen) .loader.is-out { animation: none; }
+@keyframes loaderAuto { to { opacity: 0; visibility: hidden; } }
+.loader__g { width: min(46vw, 220px); height: auto; }
+.loader__track { fill: none; stroke: var(--line-d); stroke-width: 6; }
+.loader__arc { fill: none; stroke: var(--acc); stroke-width: 6; stroke-dasharray: 245 400; stroke-dashoffset: var(--lo, 245); transform: rotate(-225deg); stroke-linecap: round; }
+.loader__ticks line { stroke: var(--chalk); stroke-width: 1.5; opacity: 0.6; }
+.loader__needle { stroke: var(--acc); stroke-width: 3; stroke-linecap: round; transform: rotate(var(--ln, -135deg)); }
+.loader__hub { fill: var(--chalk); }
+.loader__v { display: flex; align-items: baseline; gap: 8px; font: 900 clamp(3rem, 12vw, 6rem) / 1 var(--f-display); letter-spacing: var(--ls-g); font-variant-numeric: tabular-nums; }
+.loader__v span { font: 400 var(--t-sm) var(--f-mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim); }
+.loader__k { font: 400 var(--t-xs) var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim); }
+
+/* ---------- меню ---------- */
+.menu {
+  position: fixed; inset: 0; z-index: 80; background: var(--acc); color: var(--ink);
+  display: flex; flex-direction: column; padding: calc(env(safe-area-inset-top, 0px) + 8px) var(--g) calc(env(safe-area-inset-bottom, 0px) + 20px);
+  overflow-y: auto; overscroll-behavior: contain;
+  clip-path: circle(0% at calc(100% - 40px) 32px); transition: clip-path 0.7s var(--e-io);
+}
+.menu.is-open { clip-path: circle(150% at calc(100% - 40px) 32px); }
+.menu__top { display: flex; justify-content: space-between; align-items: center; min-height: var(--hh); }
+.menu__close { width: 44px; height: 44px; display: grid; place-items: center; }
+.menu__close .ico { width: 28px; height: 28px; stroke-width: 2; }
+.menu__list { margin: auto 0; padding: 24px 0; }
+.menu__list a {
+  display: flex; align-items: baseline; gap: 14px; padding: 4px 0; text-decoration: none;
+  font: 900 clamp(2.4rem, 10vw, 6rem) / 0.95 var(--f-display); text-transform: uppercase; letter-spacing: var(--ls-d);
+  transition: transform 0.4s var(--e-out);
+}
+.menu__list a:hover { transform: translateX(14px); }
+.menu__list .mono { font-size: 0.75rem; transform: translateY(-1.4em); }
+.menu.is-open .menu__list li { animation: menuIn 0.7s var(--e-out) both; animation-delay: calc(var(--i, 0) * 45ms + 150ms); }
+@keyframes menuIn { from { opacity: 0; transform: translateY(40%) rotate(2deg); } }
+.menu__foot { display: grid; gap: 14px; }
+
+/* ---------- мобильная панель ---------- */
+.mbar { display: none; }
+@media (max-width: 899px) {
+  .mbar {
+    position: fixed; z-index: 60; left: 10px; right: 10px; bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    display: grid; grid-template-columns: 1.6fr 1fr 1fr; height: 56px; overflow: hidden;
+    background: rgba(13, 13, 12, 0.9); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    border: 1px solid var(--line-d2); border-radius: 18px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  }
+  .mbar > * {
+    display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none;
+    font: 600 var(--t-sm) / 1 var(--f-text); color: var(--chalk); border-left: 1px solid var(--line-d);
+  }
+  .mbar b { font-family: var(--f-display); font-size: 1.1rem; color: var(--acc); }
+  .mbar .ico { color: var(--acc); }
+  .mbar__call { background: var(--acc); color: var(--ink) !important; border: 0 !important; }
+  .mbar__call .ico { color: var(--ink); }
+  :root { --mb: calc(76px + env(safe-area-inset-bottom, 0px)); }
+}

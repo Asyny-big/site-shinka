@@ -1,0 +1,99 @@
+/* ==========================================================
+   СЦЕНА 00 — HERO. Слева заявление, справа живое 3D-колесо.
+   Буквы «кривые», пока колесо их не «выправит».
+   ========================================================== */
+.hero {
+  min-height: max(100svh, 640px); color: var(--chalk);
+  display: grid; grid-template-rows: 1fr auto;
+  padding: calc(var(--hh) + clamp(20px, 5vh, 70px)) var(--g) 0;
+}
+.hero__in { align-self: center; max-width: min(58vw, 74rem); padding-bottom: clamp(20px, 4vh, 48px); position: relative; z-index: 2; }
+.hero__kicker { display: flex; flex-wrap: wrap; gap: 6px 22px; color: var(--dim); margin-bottom: clamp(16px, 3vh, 32px); }
+.hero__eyebrow {
+  display: flex; align-items: center; gap: 14px; margin-bottom: clamp(12px, 2vh, 24px);
+  font: 600 var(--t-lg) / 1.2 var(--f-text); letter-spacing: -0.01em;
+}
+.hero__eyebrow::before { content: ''; width: 28px; height: 3px; background: var(--acc); flex: none; }
+.hero__h { font-weight: inherit; }
+.hero__st {
+  display: block; font: 900 clamp(3.4rem, 8.4vw, 15rem) / 0.84 var(--f-display); letter-spacing: var(--ls-d); text-transform: uppercase;
+}
+.hero__ln { display: block; white-space: nowrap; }
+.hero__ln--2 { padding-left: 0.6em; }
+.hero__ln--3 .ch:last-child { color: var(--acc); }
+.ch { display: inline-block; will-change: transform; transform-origin: 50% 80%; }
+.hero__lead { max-width: 30em; margin-top: clamp(18px, 3vh, 34px); font-size: var(--t-lg); line-height: 1.45; }
+.hero__where { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 16px 0 clamp(20px, 3.4vh, 34px); color: var(--dim); }
+.hero__where .status { color: var(--chalk); }
+.hero__cta { display: flex; flex-wrap: wrap; gap: 10px; }
+.hero__cta .btn { border-radius: 999px; }
+.hero__hint { position: absolute; right: var(--g); bottom: 84px; z-index: 2; color: var(--dim); opacity: var(--hint-o, 1); transition: opacity 0.5s; }
+.hero__hint span { display: inline-block; color: var(--acc); animation: hintSpin 3s linear infinite; }
+@keyframes hintSpin { to { transform: rotate(360deg); } }
+
+/* ценники, привязанные к точкам 3D-колеса */
+.tags { position: fixed; inset: 0; z-index: 4; pointer-events: none; opacity: var(--tags-o, 0); transition: opacity 0.3s, visibility 0.3s; visibility: hidden; }
+.tags.is-on { visibility: visible; }
+.tag { position: absolute; left: 0; top: 0; transform: translate3d(var(--tx, -999px), var(--ty, -999px), 0); transition: opacity 0.3s; }
+.tag.is-hid { opacity: 0; }
+.tag.is-hid a { pointer-events: none; }
+.tag::before { /* выноска */
+  content: ''; position: absolute; right: 0; top: 0; width: var(--tl, 56px); height: 1px; background: var(--acc);
+  transform-origin: right; transform: rotate(var(--ta, 0deg));
+}
+.tag::after { content: ''; position: absolute; left: -6px; top: -6px; width: 12px; height: 12px; border-radius: 50%; background: var(--ink); border: 2px solid var(--acc); box-shadow: 0 0 0 6px rgba(255, 79, 18, 0.16); }
+.tag a {
+  position: absolute; right: var(--tl, 56px); top: 0; transform: translate(0, -50%); pointer-events: auto;
+  display: grid; gap: 3px; padding: 10px 14px; text-decoration: none; white-space: nowrap; border-radius: 10px;
+  background: rgba(13, 13, 12, 0.72); border: 1px solid var(--line-d2); color: var(--chalk);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  transition: background 0.25s, color 0.25s, border-color 0.25s;
+}
+.tag--r a { right: auto; left: var(--tl, 56px); }
+.tag--r::before { left: 0; right: auto; transform-origin: left; }
+.tag__k { color: var(--dim); }
+.tag__v { font-weight: 600; font-size: var(--t-sm); font-variant-numeric: tabular-nums; }
+.tag a:hover, .tag a:focus-visible { background: var(--acc); color: var(--ink); border-color: var(--acc); }
+.tag a:hover .tag__k { color: var(--ink); }
+
+.hero__promises {
+  position: relative; z-index: 2; display: grid; grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--line-d); margin: 0 calc(-1 * var(--g)); padding: 0 var(--g) 0 calc(var(--g) + 170px);
+}
+.hero__promises li { padding: 16px 16px 18px 0; color: var(--dim); display: flex; gap: 10px; align-items: baseline; }
+.hero__promises li + li { padding-left: 16px; border-left: 1px solid var(--line-d); }
+.hero__promises li span { color: var(--acc); }
+.hero__promises b { color: var(--chalk); font-weight: 700; }
+
+@media (min-width: 900px) and (max-height: 760px) {
+  .hero__st { font-size: clamp(3.2rem, 7vw, 9rem); }
+  .hero__lead { font-size: var(--t-md); }
+}
+@media (max-width: 1180px) and (min-width: 900px) { .hero__in { max-width: 64vw; } }
+
+/* ---------- телефон ---------- */
+@media (max-width: 899px) {
+  .hero { min-height: 100svh; padding-top: calc(var(--hh) + 18px); grid-template-rows: auto 1fr auto; }
+  .hero__in { max-width: none; align-self: start; padding-bottom: 0; }
+  .hero__kicker span:last-child { display: none; }
+  .hero__eyebrow { font-size: 1rem; }
+  .hero__st { font-size: clamp(2.8rem, 15.6vw, 6.4rem); }
+  .hero__ln--2 { padding-left: 0.4em; }
+  .hero__lead { font-size: 1.0625rem; margin-top: 16px; }
+  .hero__where { margin: 12px 0 18px; }
+  .hero__cta { display: grid; grid-template-columns: 1fr 1fr; }
+  .hero__cta .btn--accent { grid-column: 1 / -1; }
+  .tags { position: relative; inset: auto; opacity: 1; visibility: visible; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-self: end; margin: 24px 0 14px; z-index: 2; }
+  .tag { position: relative; transform: none; }
+  .tag::before, .tag::after { display: none; }
+  .tag a { position: static; transform: none; white-space: normal; background: rgba(13, 13, 12, 0.62); }
+  .hero__hint { display: none; }
+  .hero__promises { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); padding-left: var(--g); background: rgba(13, 13, 12, 0.6); }
+  .hero__promises li { padding: 12px 8px 12px 0; font-size: 0.6875rem; flex-wrap: wrap; gap: 2px 8px; }
+  .hero__promises li + li { padding-left: 8px; }
+  .hero__promises li:nth-child(3) { border-left: 0; padding-left: 0; }
+  .hero__promises li:nth-child(n + 3) { border-top: 1px solid var(--line-d); }
+}
+@media (max-width: 389px) {
+  .hero__cta .btn__aux { display: none; }
+}
